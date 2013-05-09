@@ -1,0 +1,21 @@
+syntax: glob
+
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+*.*~
+*.orig
+
+.idea/
+.gradle/
+.settings/
+
+out/
+bin/
+tmp*/
+build/
+target/
+gen/
+
