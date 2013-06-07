@@ -1,0 +1,71 @@
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath 'com.android.tools.build:gradle:0.4'
+  }
+}
+
+apply plugin: 'android'
+
+dependencies {
+  compile fileTree( dir: 'libs', include: '**/*.jar' )
+}
+
+android {
+  compileSdkVersion 17
+  buildToolsVersion '17'
+
+  defaultConfig {
+    versionCode 8
+    versionName '1.0.0-SNAPSHOT'
+    minSdkVersion 8
+    targetSdkVersion 17
+  }
+
+  signingConfigs {
+    release {
+      storeFile file( "gradle/path_to_release.keystore" )
+      storePassword "my_password"
+      keyAlias "my_alias"
+      keyPassword "my_password"
+    }
+  }
+
+  buildTypes {
+    release {
+      signingConfig signingConfigs.release
+      runProguard true
+      proguardFile "gradle/default.pro"
+      proguardFile getDefaultProguardFile( 'proguard-android-optimize.txt' )
+    }
+  }
+}
+
+task renameReleaseAPK() {
+  def apkDir = file( "${project.buildDir}/apk" )
+
+  inputs.dir apkDir
+  outputs.dir apkDir
+
+  doLast {
+    copy {
+      from apkDir
+      into apkDir
+      exclude '*unaligned*'
+
+      rename { String fileName ->
+        "${project.name}-${android.defaultConfig.versionName}.apk"
+      }
+    }
+  }
+}
+
+defaultTasks 'clean', 'assemble', 'renameReleaseAPK'
+
+task wrapper( type: Wrapper ) {
+  gradleVersion = '1.6'
+}
+
